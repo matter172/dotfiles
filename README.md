@@ -5,7 +5,7 @@ Automated Fedora setup scripts. Removes GNOME bloat, updates the system, and ins
 ## Usage
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/matter172/dotfiles/main/00-setup.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/matter172/dotfiles/refs/heads/main/00-setup.sh)
 ```
 
 That's it. The master script fetches and runs each step in order.
