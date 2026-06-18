@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASE_URL="https://raw.githubusercontent.com/matter172/dotfiles/main"
+BASE_URL="https://raw.githubusercontent.com/matter172/dotfiles/refs/heads/main"
 
 curl -fsSL "$BASE_URL/01-rooted-remove-software.sh" -o /tmp/01.sh
 curl -fsSL "$BASE_URL/02-rooted-update-fedora.sh"   -o /tmp/02.sh
