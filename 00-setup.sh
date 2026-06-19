@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-BASE_URL="https://raw.githubusercontent.com/matter172/dotfiles/main"
+BASE_URL="https://github.com/matter172/dotfiles/raw/main"
 BUST="?$(date +%s)"
 TMP_DIR=$(mktemp -d)
 LOG_DIR="${HOME}/.local/state/dotfiles-setup"
