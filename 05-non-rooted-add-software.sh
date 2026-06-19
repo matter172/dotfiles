@@ -26,7 +26,6 @@ FLATPAKS=(
   "com.belmoussaoui.Decoder|Decoder"
   "io.github.nozwock.Packet|Packet"
   "com.discordapp.Discord|Discord"
-  "org.freedesktop.Platform.VulkanLayer.gamescope|Gamescope"
   "net.nokyan.Resources|Resources"
 )
 
@@ -34,3 +33,17 @@ for entry in "${FLATPAKS[@]}"; do
   IFS='|' read -r app_id label <<< "$entry"
   checkbox "Install ${label}" flatpak install -y --noninteractive flathub "$app_id"
 done
+
+# Gamescope is a Vulkan layer extension, not a standalone app, and is
+# published as multiple refs (one per org.freedesktop.Platform runtime
+# branch). Installing it bare is ambiguous in non-interactive mode, so
+# pin it to whatever Platform runtime branch is actually installed.
+GAMESCOPE_REF="org.freedesktop.Platform.VulkanLayer.gamescope"
+PLATFORM_BRANCH=$(flatpak list --columns=application,branch 2>/dev/null \
+  | awk '$1 == "org.freedesktop.Platform" { print $2; exit }')
+
+if [ -n "$PLATFORM_BRANCH" ]; then
+  checkbox "Install Gamescope" flatpak install -y --noninteractive flathub "${GAMESCOPE_REF}//${PLATFORM_BRANCH}"
+else
+  checkbox "Install Gamescope" flatpak install -y --noninteractive flathub "$GAMESCOPE_REF"
+fi
