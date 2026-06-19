@@ -26,7 +26,7 @@ FLATPAKS=(
   "com.belmoussaoui.Decoder|Decoder"
   "io.github.nozwock.Packet|Packet"
   "com.discordapp.Discord|Discord"
-  "gamescope|Gamescope"
+  "org.freedesktop.Platform.VulkanLayer.gamescope|Gamescope"
   "net.nokyan.Resources|Resources"
 )
 
