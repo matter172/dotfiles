@@ -8,6 +8,7 @@ PACKAGES=(
   "proton-pass"
   "pipx"
   "zed"
+  "steam-devices"
 )
 
 for pkg in "${PACKAGES[@]}"; do
