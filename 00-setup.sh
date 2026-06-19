@@ -4,7 +4,9 @@ set -e
 BASE_URL="https://raw.githubusercontent.com/matter172/dotfiles/main"
 BUST="?$(date +%s)"
 TMP_DIR=$(mktemp -d)
-LOG_FILE="${TMP_DIR}/setup.log"
+LOG_DIR="${HOME}/.local/state/dotfiles-setup"
+mkdir -p "$LOG_DIR"
+LOG_FILE="${LOG_DIR}/setup-$(date +%Y%m%d-%H%M%S).log"
 
 BOLD=$'\033[1m'
 DIM=$'\033[2m'
@@ -66,3 +68,4 @@ for entry in "${STEPS[@]}"; do
 done
 
 echo "${GREEN}${BOLD}All done.${RESET}"
+echo "${DIM}Full log: ${LOG_FILE}${RESET}"
