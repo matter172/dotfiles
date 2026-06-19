@@ -43,6 +43,11 @@ done
 chmod +x "${TMP_DIR}"/*.sh
 echo
 
+# Create the log file as the current user first, then open it up so
+# later sudo-run steps can append to it without permission errors.
+touch "$LOG_FILE"
+chmod 666 "$LOG_FILE"
+
 # Cache sudo credentials once up front
 sudo -v
 
