@@ -34,6 +34,8 @@ for entry in "${FLATPAKS[@]}"; do
   checkbox "Install ${label}" flatpak install -y --noninteractive flathub "$app_id"
 done
 
+checkbox "Update installed Flatpaks" flatpak update -y --noninteractive
+
 # Gamescope is a Vulkan layer extension, not a standalone app, and is
 # published as multiple refs (one per org.freedesktop.Platform runtime
 # branch). Installing it bare is ambiguous in non-interactive mode, so
