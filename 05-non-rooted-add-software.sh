@@ -5,13 +5,6 @@ LOG_FILE="${1:-/dev/null}"
 SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
 source "${SCRIPT_DIR}/lib-checkbox.sh" || { echo "lib-checkbox.sh not found"; exit 1; }
 
-# pipx installs binaries (like gext) into ~/.local/bin, so it needs to be
-# on PATH for the gext call below to find it.
-checkbox "Add ~/.local/bin to PATH" bash -c \
-  "echo 'export PATH=\$HOME/.local/bin:\$PATH' >> ~/.bashrc"
-
-export PATH="$HOME/.local/bin:$PATH"
-
 checkbox "Install gnome-extensions-cli" pipx install gnome-extensions-cli --system-site-packages
 
 checkbox "Install Tiling Shell extension" gext install tilingshell@ferrarodomenico.com
