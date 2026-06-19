@@ -38,7 +38,16 @@ That's it. The master script downloads each step and runs them in order, showing
   [x] Install Tiling Shell extension
   [x] Install Caffeine extension
   [x] Install Brave Browser
-  ...
+  [x] Install Flatseal
+  [x] Install Steam
+  [x] Install ProtonPlus
+  [x] Install Heroic Games Launcher
+  [x] Install Decoder
+  [x] Install Packet
+  [x] Install Discord
+  [x] Install Resources
+  [x] Update installed Flatpaks
+  [x] Install Gamescope
 
 [6/7] Setting Dash favorites
   [x] Set Dash favorites (7/7 found)
@@ -46,7 +55,7 @@ That's it. The master script downloads each step and runs them in order, showing
 [7/7] Configuring power settings
   [x] Disable auto-sleep on AC
   [x] Disable screen dimming on AC
-  [x] Disable lid-close suspend on AC
+  [skip] Disable lid-close suspend on AC (key 'lid-close-ac-action' not present on this system)
 
 All done.
 ```
@@ -82,7 +91,9 @@ Installs system packages from the repos added in the previous step:
 Installs user-space tools and Flatpaks, one item at a time:
 - `gnome-extensions-cli` via pipx
 - GNOME extensions, via `gext`: [Tiling Shell](https://github.com/domferr/tilingshell) (window tiling) and [Caffeine](https://extensions.gnome.org/extension/517/caffeine/) (disables screensaver/auto-suspend on demand)
-- Flatpaks (pinned to the `flathub` remote explicitly to avoid an interactive remote-choice prompt): Brave, Flatseal, Steam, ProtonPlus, Heroic Games Launcher, Decoder, Packet, Discord
+- Flatpaks (pinned to the `flathub` remote explicitly to avoid an interactive remote-choice prompt): Brave, Flatseal, Steam, ProtonPlus, Heroic Games Launcher, Decoder, Packet, Discord, Resources
+- Updates all installed Flatpaks (`flatpak update -y --noninteractive`), so previously-installed apps stay current on every run
+- **Gamescope** (`org.freedesktop.Platform.VulkanLayer.gamescope`) is installed separately from the main Flatpak loop, since it's a Vulkan layer extension published as multiple refs — one per `org.freedesktop.Platform` runtime branch. Installing it bare is ambiguous in non-interactive mode, so the script detects the installed Platform runtime's branch (via `flatpak list --columns=application,branch`) and installs Gamescope pinned to that exact branch (e.g. `//24.08`).
 
 ### `06-non-rooted-update-dash.sh`
 Sets the GNOME Dash (Activities overview) favorites/pinned apps, in this order:
@@ -95,6 +106,8 @@ Disables auto-sleep, screen dimming, and lid-close suspend — **while on AC pow
 - `sleep-inactive-ac-type` → `nothing` (no auto-sleep when inactive on AC)
 - `idle-dim` → `false` (no screen dimming on AC)
 - `lid-close-ac-action` → `nothing` (closing the lid does nothing on AC — screen stays on, no lock/suspend)
+
+Checks `gsettings list-keys` for each setting before applying it, since some keys (notably `lid-close-ac-action`) aren't present on every GNOME version. Missing keys show as `[skip]` rather than a failure, with the full list of actually-available keys logged for reference.
 
 ## Notes
 
