@@ -11,29 +11,32 @@ bash <(curl -fsSL https://github.com/matter172/dotfiles/raw/main/00-setup.sh)
 That's it. The master script downloads each step and runs them in order, showing progress like this:
 
 ```
-[1/5] Removing default GNOME software
+[1/6] Removing default GNOME software
   [x] Remove libreoffice-core.x86_64
   [x] Remove gnome-tour.x86_64
   ...
 
-[2/5] Updating Fedora
+[2/6] Updating Fedora
   [x] Update Fedora packages
 
-[3/5] Adding repositories
+[3/6] Adding repositories
   [x] Add Proton Pass repository
   [x] Add Terra repository
 
-[4/5] Installing system packages
+[4/6] Installing system packages
   [x] Install proton-pass
   [x] Install pipx
   [x] Install zed
 
-[5/5] Installing user apps and Flatpaks
+[5/6] Installing user apps and Flatpaks
   [x] Add ~/.local/bin to PATH
   [x] Install gnome-extensions-cli
   [x] Install Tiling Shell extension
   [x] Install Brave Browser
   ...
+
+[6/6] Setting Dash favorites
+  [x] Set Dash favorites (7/7 found)
 
 All done.
 ```
@@ -69,6 +72,12 @@ Installs user-space tools and Flatpaks, one item at a time:
 - `gnome-extensions-cli` via pipx
 - [Tiling Shell](https://github.com/domferr/tilingshell) — GNOME tiling extension
 - Flatpaks (pinned to the `flathub` remote explicitly to avoid an interactive remote-choice prompt): Brave, Flatseal, Steam, ProtonPlus, Heroic Games Launcher, Decoder, Packet, Discord
+
+### `06-set-dash-favorites.sh`
+Sets the GNOME Dash (Activities overview) favorites/pinned apps, in this order:
+Files, Brave, Discord, Steam, Heroic, Zed, Terminal.
+
+Rather than hardcoding exact `.desktop` filenames (which vary by packaging), it searches the standard application directories (`/usr/share/applications`, Flatpak export dirs, `~/.local/share/applications`) for each app, trying a few known candidate names per app and using the first match. Apps it can't find are skipped (not left as gaps), and a summary like `Set Dash favorites (6/7 found)` is shown.
 
 ## Notes
 
