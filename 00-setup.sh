@@ -22,7 +22,7 @@ FILES=(
   "04-rooted-add-software.sh"
   "05-non-rooted-add-software.sh"
   "06-non-rooted-update-dash.sh"
-  "07-non-root-update-power.sh"
+  "07-non-rooted-update-power.sh"
 )
 
 STEPS=(
@@ -32,7 +32,7 @@ STEPS=(
   "04-rooted-add-software.sh|Installing system packages|sudo"
   "05-non-rooted-add-software.sh|Installing user apps and Flatpaks|user"
   "06-non-rooted-update-dash.sh|Setting Dash favorites|user"
-  "07-non-root-update-power.sh|Configuring power settings|user"
+  "07-non-rooted-update-power.sh|Configuring power settings|user"
 )
 
 echo "${BOLD}dotfiles setup${RESET}"
