@@ -26,6 +26,7 @@ FLATPAKS=(
   "com.belmoussaoui.Decoder|Decoder"
   "io.github.nozwock.Packet|Packet"
   "com.discordapp.Discord|Discord"
+  "gamescope|Gamescope"
 )
 
 for entry in "${FLATPAKS[@]}"; do
