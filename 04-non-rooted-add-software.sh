@@ -28,5 +28,5 @@ FLATPAKS=(
 
 for entry in "${FLATPAKS[@]}"; do
   IFS='|' read -r app_id label <<< "$entry"
-  checkbox "Install ${label}" flatpak install -y "$app_id"
+  checkbox "Install ${label}" flatpak install -y --noninteractive flathub "$app_id"
 done
