@@ -21,6 +21,7 @@ FILES=(
   "03-rooted-add-repo.sh"
   "04-rooted-add-software.sh"
   "05-non-rooted-add-software.sh"
+  "06-set-dash-favorites.sh"
 )
 
 STEPS=(
@@ -29,6 +30,7 @@ STEPS=(
   "03-rooted-add-repo.sh|Adding repositories|sudo"
   "04-rooted-add-software.sh|Installing system packages|sudo"
   "05-non-rooted-add-software.sh|Installing user apps and Flatpaks|user"
+  "06-set-dash-favorites.sh|Setting Dash favorites|user"
 )
 
 echo "${BOLD}dotfiles setup${RESET}"
