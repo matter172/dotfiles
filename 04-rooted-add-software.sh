@@ -9,6 +9,8 @@ PACKAGES=(
   "pipx"
   "zed"
   "steam-devices"
+  "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
+  "akmod-nvidia"
 )
 
 for pkg in "${PACKAGES[@]}"; do
