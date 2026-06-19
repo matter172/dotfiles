@@ -11,12 +11,12 @@ bash <(curl -fsSL https://github.com/matter172/dotfiles/raw/main/00-setup.sh)
 That's it. The master script downloads each step and runs them in order, showing progress like this:
 
 ```
-[1/6] Removing default GNOME software
+[1/7] Removing default GNOME software
   [x] Remove libreoffice-core.x86_64
   [x] Remove gnome-tour.x86_64
   ...
 
-[2/6] Updating Fedora
+[2/7] Updating Fedora
   Checking for updates...
   4 package(s) to update.
   [x] Update coreutils
@@ -24,24 +24,29 @@ That's it. The master script downloads each step and runs them in order, showing
   [x] Update kf6-filesystem
   [x] Update wireless-regdb
 
-[3/6] Adding repositories
+[3/7] Adding repositories
   [x] Add Proton Pass repository
   [x] Add Terra repository
 
-[4/6] Installing system packages
+[4/7] Installing system packages
   [x] Install proton-pass
   [x] Install pipx
   [x] Install zed
 
-[5/6] Installing user apps and Flatpaks
+[5/7] Installing user apps and Flatpaks
   [x] Install gnome-extensions-cli
   [x] Install Tiling Shell extension
   [x] Install Caffeine extension
   [x] Install Brave Browser
   ...
 
-[6/6] Setting Dash favorites
+[6/7] Setting Dash favorites
   [x] Set Dash favorites (7/7 found)
+
+[7/7] Configuring power settings
+  [x] Disable auto-sleep on AC
+  [x] Disable screen dimming on AC
+  [x] Disable lid-close suspend on AC
 
 All done.
 ```
@@ -65,7 +70,7 @@ Updates Fedora, one package at a time. Runs `dnf check-update` first to get the 
 ### `03-rooted-add-repo.sh`
 Adds third-party DNF repositories needed by later steps:
 - [Proton Pass](https://github.com/matter172/unofficial-proton-pass-rpm) (unofficial RPM repo)
-- [Terra](https://terra.fyralabs.com) — used to install Zed as a proper DNF package, so it gets updates through `dnf update` instead of a separate mechanism
+- [Terra](https://terra.fyralabs.com) — used to install Zed as a proper DNF package, so it gets updates through `dnf update` instead of a separate mechanism. Checks `rpm -q terra-release` first and skips re-adding it if already present, since `dnf install --repofrompath` errors on a duplicate repo id rather than being a no-op.
 
 ### `04-rooted-add-software.sh`
 Installs system packages from the repos added in the previous step:
@@ -83,12 +88,18 @@ Installs user-space tools and Flatpaks, one item at a time:
 Sets the GNOME Dash (Activities overview) favorites/pinned apps, in this order:
 Files, Brave, Discord, Steam, Heroic, Zed, Terminal (Ptyxis).
 
-Rather than hardcoding exact `.desktop` filenames (which vary by packaging), it searches the standard application directories (`/usr/share/applications`, Flatpak export dirs, `~/.local/share/applications`) for each app, trying a few known candidate names per app and using the first match. Apps it can't find are skipped (not left as gaps), and a summary like `Set Dash favorites (6/7 found)` is shown. This step runs last, after the Flatpak installs, since it needs those apps' `.desktop` files to already exist.
+Rather than hardcoding exact `.desktop` filenames (which vary by packaging), it searches the standard application directories (`/usr/share/applications`, Flatpak export dirs, `~/.local/share/applications`) for each app, trying a few known candidate names per app and using the first match. Apps it can't find are skipped (not left as gaps), and a summary like `Set Dash favorites (6/7 found)` is shown. This step runs after the Flatpak installs, since it needs those apps' `.desktop` files to already exist.
+
+### `07-non-root-update-power.sh`
+Disables auto-sleep, screen dimming, and lid-close suspend — **while on AC power only**. Battery behavior is left untouched. Sets:
+- `sleep-inactive-ac-type` → `nothing` (no auto-sleep when inactive on AC)
+- `idle-dim` → `false` (no screen dimming on AC)
+- `lid-close-ac-action` → `nothing` (closing the lid does nothing on AC — screen stays on, no lock/suspend)
 
 ## Notes
 
 - Scripts prefixed `rooted` require sudo and are run with `sudo bash`.
-- Scripts prefixed `non-rooted` run as the current user.
+- Scripts prefixed `non-rooted`/`non-root` run as the current user.
 - `bash <(curl ...)` is used at the top level instead of `curl | bash` so any interactive prompts work correctly.
 - `00-setup.sh` downloads all scripts to a temp directory, then runs each one in order, passing the shared log file path as an argument.
 - The log file lives at `~/.local/state/dotfiles-setup/setup-<timestamp>.log` and is created and `chmod 666`'d before any `sudo` step runs, so both root- and user-owned steps can append to it without permission errors. It is not deleted after the run.
@@ -96,4 +107,4 @@ Rather than hardcoding exact `.desktop` filenames (which vary by packaging), it 
 - `sudo -v` is called once up front to cache credentials, so you're only prompted for a password once even though several steps each use sudo.
 - Flatpak installs use `--noninteractive` and explicitly pin the `flathub` remote, since some app IDs (e.g. Flatseal) exist on multiple remotes and would otherwise prompt to choose one.
 - Zed is installed via Terra rather than the official curl installer, so it ships as a proper RPM and stays current through normal Fedora updates.
-- The Terra repo step checks `rpm -q terra-release` first and skips re-adding it if already present, since `dnf install --repofrompath` errors on a duplicate repo id rather than being a no-op.
+- All scripts referenced by `00-setup.sh` must end in `.sh` — only `.sh` files are downloaded and run.
