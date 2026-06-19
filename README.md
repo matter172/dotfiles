@@ -5,7 +5,7 @@ Automated Fedora setup scripts. Removes GNOME bloat, updates the system, and ins
 ## Usage
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/matter172/dotfiles/refs/heads/main/00-setup.sh)
+bash <(curl -fsSL https://github.com/matter172/dotfiles/raw/main/00-setup.sh)
 ```
 
 That's it. The master script downloads each step and runs them in order, showing progress like this:
@@ -52,7 +52,7 @@ LibreOffice, Firefox, GNOME Tour, Calendar, Boxes, Contacts, Weather, Maps, Cloc
 ### `02-rooted-update-fedora.sh`
 Runs a full system update via `dnf update`.
 
-### `03-rooted-add-repos.sh`
+### `03-rooted-add-repo.sh`
 Adds third-party DNF repositories needed by later steps:
 - [Proton Pass](https://github.com/matter172/unofficial-proton-pass-rpm) (unofficial RPM repo)
 - [Terra](https://terra.fyralabs.com) — used to install Zed as a proper DNF package, so it gets updates through `dnf update` instead of a separate mechanism
@@ -77,7 +77,7 @@ Installs user-space tools and Flatpaks, one item at a time:
 - `bash <(curl ...)` is used at the top level instead of `curl | bash` so any interactive prompts work correctly.
 - `00-setup.sh` downloads all scripts to a temp directory, then runs each one in order, passing the shared log file path as an argument.
 - The log file lives at `~/.local/state/dotfiles-setup/setup-<timestamp>.log` and is created and `chmod 666`'d before any `sudo` step runs, so both root- and user-owned steps can append to it without permission errors. It is not deleted after the run.
-- A cache-busting query string (`?<timestamp>`) is appended to each download URL to avoid stale copies from GitHub's CDN right after a push.
+- A cache-busting query string (`?<timestamp>`) is appended to each download URL to avoid stale copies after a push. `00-setup.sh` fetches via `github.com/.../raw/` rather than `raw.githubusercontent.com` directly, since the latter's CDN edge can serve a stale copy for a few minutes after a push even with cache-busting.
 - `sudo -v` is called once up front to cache credentials, so you're only prompted for a password once even though several steps each use sudo.
 - Flatpak installs use `--noninteractive` and explicitly pin the `flathub` remote, since some app IDs (e.g. Flatseal) exist on multiple remotes and would otherwise prompt to choose one.
 - Zed is installed via Terra rather than the official curl installer, so it ships as a proper RPM and stays current through normal Fedora updates.
