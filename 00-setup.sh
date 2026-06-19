@@ -22,6 +22,7 @@ FILES=(
   "04-rooted-add-software.sh"
   "05-non-rooted-add-software.sh"
   "06-non-rooted-update-dash.sh"
+  "07-non-root-update-power.sh"
 )
 
 STEPS=(
@@ -31,6 +32,7 @@ STEPS=(
   "04-rooted-add-software.sh|Installing system packages|sudo"
   "05-non-rooted-add-software.sh|Installing user apps and Flatpaks|user"
   "06-non-rooted-update-dash.sh|Setting Dash favorites|user"
+  "07-non-root-update-power.sh|Configuring power settings|user"
 )
 
 echo "${BOLD}dotfiles setup${RESET}"
@@ -41,6 +43,28 @@ cleanup() {
   rm -rf "$TMP_DIR"
 }
 trap cleanup EXIT
+
+# Enforce .sh-only filenames so a renamed/typo'd file fails loudly here
+# instead of silently 404ing on download or being skipped by a glob.
+for f in "${FILES[@]}"; do
+  case "$f" in
+    *.sh) ;;
+    *)
+      echo "${RED}Error: '${f}' in FILES does not end in .sh. Only .sh files are run.${RESET}"
+      exit 1
+      ;;
+  esac
+done
+for entry in "${STEPS[@]}"; do
+  IFS='|' read -r script _ _ <<< "$entry"
+  case "$script" in
+    *.sh) ;;
+    *)
+      echo "${RED}Error: '${script}' in STEPS does not end in .sh. Only .sh files are run.${RESET}"
+      exit 1
+      ;;
+  esac
+done
 
 echo "==> Downloading scripts..."
 for f in "${FILES[@]}"; do
