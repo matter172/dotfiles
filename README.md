@@ -11,22 +11,24 @@ bash <(curl -fsSL https://raw.githubusercontent.com/matter172/dotfiles/refs/head
 That's it. The master script downloads each step and runs them in order, showing progress like this:
 
 ```
-[1/4] Removing default GNOME software
+[1/5] Removing default GNOME software
   [x] Remove libreoffice-core.x86_64
   [x] Remove gnome-tour.x86_64
-  [ ] Remove gnome-maps.x86_64 (failed — see log)
   ...
 
-[2/4] Updating Fedora
+[2/5] Updating Fedora
   [x] Update Fedora packages
 
-[3/4] Installing system packages
+[3/5] Adding repositories
   [x] Add Proton Pass repository
+  [x] Add Terra repository
+
+[4/5] Installing system packages
   [x] Install proton-pass
   [x] Install pipx
+  [x] Install zed
 
-[4/4] Installing user apps and Flatpaks
-  [x] Install Zed editor
+[5/5] Installing user apps and Flatpaks
   [x] Add ~/.local/bin to PATH
   [x] Install gnome-extensions-cli
   [x] Install Tiling Shell extension
@@ -36,12 +38,12 @@ That's it. The master script downloads each step and runs them in order, showing
 All done.
 ```
 
-Full command output (dnf, flatpak, curl, etc.) is written to a temp log file rather than printed to the terminal, so the display stays clean. The log path is printed at the start of the run if you need to debug a failed item.
+Full command output (dnf, flatpak, curl, etc.) is written to a persistent log file rather than printed to the terminal, so the display stays clean. The log path is printed at the start (and end) of the run if you need to debug a failed item — failures also print their own last few log lines inline, so you usually don't need to open the log file at all.
 
 ## What it does
 
 ### `lib-checkbox.sh`
-Shared helper sourced by every step script. Provides a single `checkbox "label" command...` function that runs a command, prints `[x]`/`[ ]` next to a label, and logs full output to the shared log file. Not run directly.
+Shared helper sourced by every step script. Provides a single `checkbox "label" command...` function that runs a command, prints `[x]`/`[ ]` next to a label, logs full output, and returns the wrapped command's real exit status (so failures propagate correctly even through nested scripts). Not run directly.
 
 ### `01-rooted-remove-software.sh`
 Removes default GNOME apps that aren't needed, one at a time:
@@ -50,19 +52,23 @@ LibreOffice, Firefox, GNOME Tour, Calendar, Boxes, Contacts, Weather, Maps, Cloc
 ### `02-rooted-update-fedora.sh`
 Runs a full system update via `dnf update`.
 
-### `03-rooted-add-software.sh`
-Installs via DNF, one item at a time:
-- [Proton Pass](https://github.com/matter172/unofficial-proton-pass-rpm) repository (via unofficial RPM repo)
+### `03-rooted-add-repos.sh`
+Adds third-party DNF repositories needed by later steps:
+- [Proton Pass](https://github.com/matter172/unofficial-proton-pass-rpm) (unofficial RPM repo)
+- [Terra](https://terra.fyralabs.com) — used to install Zed as a proper DNF package, so it gets updates through `dnf update` instead of a separate mechanism
+
+### `04-rooted-add-software.sh`
+Installs system packages from the repos added in the previous step:
 - `proton-pass`
 - `pipx`
+- `zed` — from Terra
 
-### `04-non-rooted-add-software.sh`
+### `05-non-rooted-add-software.sh`
 Installs user-space tools and Flatpaks, one item at a time:
-- [Zed](https://zed.dev) — code editor
-- `~/.local/bin` added to `PATH`
+- `~/.local/bin` added to `PATH` (needed so pipx-installed binaries like `gext` are found)
 - `gnome-extensions-cli` via pipx
 - [Tiling Shell](https://github.com/domferr/tilingshell) — GNOME tiling extension
-- Flatpaks: Brave, Flatseal, Steam, ProtonPlus, Heroic Games Launcher, Decoder, Packet, Discord
+- Flatpaks (pinned to the `flathub` remote explicitly to avoid an interactive remote-choice prompt): Brave, Flatseal, Steam, ProtonPlus, Heroic Games Launcher, Decoder, Packet, Discord
 
 ## Notes
 
@@ -70,6 +76,8 @@ Installs user-space tools and Flatpaks, one item at a time:
 - Scripts prefixed `non-rooted` run as the current user.
 - `bash <(curl ...)` is used at the top level instead of `curl | bash` so any interactive prompts work correctly.
 - `00-setup.sh` downloads all scripts to a temp directory, then runs each one in order, passing the shared log file path as an argument.
-- The log file is created and `chmod 666`'d before any `sudo` step runs, so both root- and user-owned steps can append to it without permission errors.
+- The log file lives at `~/.local/state/dotfiles-setup/setup-<timestamp>.log` and is created and `chmod 666`'d before any `sudo` step runs, so both root- and user-owned steps can append to it without permission errors. It is not deleted after the run.
 - A cache-busting query string (`?<timestamp>`) is appended to each download URL to avoid stale copies from GitHub's CDN right after a push.
-- `sudo -v` is called once up front to cache credentials, so you're only prompted for a password once even though steps 1–3 each use sudo.
+- `sudo -v` is called once up front to cache credentials, so you're only prompted for a password once even though several steps each use sudo.
+- Flatpak installs use `--noninteractive` and explicitly pin the `flathub` remote, since some app IDs (e.g. Flatseal) exist on multiple remotes and would otherwise prompt to choose one.
+- Zed is installed via Terra rather than the official curl installer, so it ships as a proper RPM and stays current through normal Fedora updates.
