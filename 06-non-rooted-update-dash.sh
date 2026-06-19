@@ -15,7 +15,7 @@ declare -A CANDIDATES=(
   ["Steam"]="com.valvesoftware.Steam"
   ["Heroic"]="com.heroicgameslauncher.hgl"
   ["Zed"]="dev.zed.Zed zed zeditor"
-  ["Terminal"]="org.gnome.Console org.gnome.Terminal"
+  ["Terminal"]="app.devsuite.Ptyxis org.gnome.Ptyxis org.gnome.Console org.gnome.Terminal"
 )
 
 ORDER=("Files" "Brave" "Discord" "Steam" "Heroic" "Zed" "Terminal")
