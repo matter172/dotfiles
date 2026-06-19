@@ -17,7 +17,12 @@ That's it. The master script downloads each step and runs them in order, showing
   ...
 
 [2/6] Updating Fedora
-  [x] Update Fedora packages
+  Checking for updates...
+  4 package(s) to update.
+  [x] Update coreutils
+  [x] Update coreutils-common
+  [x] Update kf6-filesystem
+  [x] Update wireless-regdb
 
 [3/6] Adding repositories
   [x] Add Proton Pass repository
@@ -29,7 +34,6 @@ That's it. The master script downloads each step and runs them in order, showing
   [x] Install zed
 
 [5/6] Installing user apps and Flatpaks
-  [x] Add ~/.local/bin to PATH
   [x] Install gnome-extensions-cli
   [x] Install Tiling Shell extension
   [x] Install Brave Browser
@@ -41,19 +45,21 @@ That's it. The master script downloads each step and runs them in order, showing
 All done.
 ```
 
+If there's nothing to update in step 2, it prints `Nothing to update.` and skips straight to step 3.
+
 Full command output (dnf, flatpak, curl, etc.) is written to a persistent log file rather than printed to the terminal, so the display stays clean. The log path is printed at the start (and end) of the run if you need to debug a failed item — failures also print their own last few log lines inline, so you usually don't need to open the log file at all.
 
 ## What it does
 
 ### `lib-checkbox.sh`
-Shared helper sourced by every step script. Provides a single `checkbox "label" command...` function that runs a command, prints `[x]`/`[ ]` next to a label, logs full output, and returns the wrapped command's real exit status (so failures propagate correctly even through nested scripts). Not run directly.
+Shared helper sourced by every step script. Provides a single `checkbox "label" command...` function that runs a command, prints `[x]`/`[ ]` next to a label, and logs full output. Not run directly.
 
 ### `01-rooted-remove-software.sh`
 Removes default GNOME apps that aren't needed, one at a time:
 LibreOffice, Firefox, GNOME Tour, Calendar, Boxes, Contacts, Weather, Maps, Clocks, Calculator, Characters, System Monitor, Connections, Font Viewer, simple-scan, yelp, malcontent-control, gnome-abrt, Papers, Showtime, Loupe, Decibels, Mediawriter.
 
 ### `02-rooted-update-fedora.sh`
-Runs a full system update via `dnf update`.
+Updates Fedora, one package at a time. Runs `dnf check-update` first to get the list of pending packages, then calls `dnf update -y <package>` per package so each shows its own checkbox. If nothing is pending, it prints `Nothing to update.` and exits without any checkboxes.
 
 ### `03-rooted-add-repo.sh`
 Adds third-party DNF repositories needed by later steps:
@@ -68,16 +74,15 @@ Installs system packages from the repos added in the previous step:
 
 ### `05-non-rooted-add-software.sh`
 Installs user-space tools and Flatpaks, one item at a time:
-- `~/.local/bin` added to `PATH` (needed so pipx-installed binaries like `gext` are found)
 - `gnome-extensions-cli` via pipx
 - [Tiling Shell](https://github.com/domferr/tilingshell) — GNOME tiling extension
 - Flatpaks (pinned to the `flathub` remote explicitly to avoid an interactive remote-choice prompt): Brave, Flatseal, Steam, ProtonPlus, Heroic Games Launcher, Decoder, Packet, Discord
 
-### `06-set-dash-favorites.sh`
+### `06-non-rooted-update-dash.sh`
 Sets the GNOME Dash (Activities overview) favorites/pinned apps, in this order:
 Files, Brave, Discord, Steam, Heroic, Zed, Terminal.
 
-Rather than hardcoding exact `.desktop` filenames (which vary by packaging), it searches the standard application directories (`/usr/share/applications`, Flatpak export dirs, `~/.local/share/applications`) for each app, trying a few known candidate names per app and using the first match. Apps it can't find are skipped (not left as gaps), and a summary like `Set Dash favorites (6/7 found)` is shown.
+Rather than hardcoding exact `.desktop` filenames (which vary by packaging), it searches the standard application directories (`/usr/share/applications`, Flatpak export dirs, `~/.local/share/applications`) for each app, trying a few known candidate names per app and using the first match. Apps it can't find are skipped (not left as gaps), and a summary like `Set Dash favorites (6/7 found)` is shown. This step runs last, after the Flatpak installs, since it needs those apps' `.desktop` files to already exist.
 
 ## Notes
 
