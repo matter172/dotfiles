@@ -1,5 +1,5 @@
 #!/bin/bash
-# Adds the Proton Pass repo + installs system packages, one at a time.
+# Adds third-party DNF repositories needed by later steps.
 
 LOG_FILE="${1:-/dev/null}"
 source "$(dirname "${BASH_SOURCE[0]}")/lib-checkbox.sh" || { echo "lib-checkbox.sh not found"; exit 1; }
@@ -7,11 +7,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib-checkbox.sh" || { echo "lib-checkbox.
 checkbox "Add Proton Pass repository" bash -c \
   "curl -fsSL https://raw.githubusercontent.com/matter172/unofficial-proton-pass-rpm/refs/heads/main/setup.sh | bash"
 
-PACKAGES=(
-  "proton-pass"
-  "pipx"
-)
-
-for pkg in "${PACKAGES[@]}"; do
-  checkbox "Install ${pkg}" dnf install -y "$pkg"
-done
+checkbox "Add Terra repository" dnf install -y --nogpgcheck \
+  --repofrompath "terra,https://repos.fyralabs.com/terra\$releasever" \
+  --setopt="terra.gpgkey=https://repos.fyralabs.com/terra\$releasever/key.asc" \
+  terra-release
