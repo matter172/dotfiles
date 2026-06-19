@@ -90,7 +90,7 @@ Files, Brave, Discord, Steam, Heroic, Zed, Terminal (Ptyxis).
 
 Rather than hardcoding exact `.desktop` filenames (which vary by packaging), it searches the standard application directories (`/usr/share/applications`, Flatpak export dirs, `~/.local/share/applications`) for each app, trying a few known candidate names per app and using the first match. Apps it can't find are skipped (not left as gaps), and a summary like `Set Dash favorites (6/7 found)` is shown. This step runs after the Flatpak installs, since it needs those apps' `.desktop` files to already exist.
 
-### `07-non-root-update-power.sh`
+### `07-non-rooted-update-power.sh`
 Disables auto-sleep, screen dimming, and lid-close suspend — **while on AC power only**. Battery behavior is left untouched. Sets:
 - `sleep-inactive-ac-type` → `nothing` (no auto-sleep when inactive on AC)
 - `idle-dim` → `false` (no screen dimming on AC)
