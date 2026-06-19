@@ -27,6 +27,7 @@ FLATPAKS=(
   "io.github.nozwock.Packet|Packet"
   "com.discordapp.Discord|Discord"
   "gamescope|Gamescope"
+  "net.nokyan.Resources|Resources"
 )
 
 for entry in "${FLATPAKS[@]}"; do
