@@ -7,7 +7,13 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib-checkbox.sh" || { echo "lib-checkbox.
 checkbox "Add Proton Pass repository" bash -c \
   "curl -fsSL https://raw.githubusercontent.com/matter172/unofficial-proton-pass-rpm/refs/heads/main/setup.sh | bash"
 
-checkbox "Add Terra repository" dnf install -y --nogpgcheck \
-  --repofrompath "terra,https://repos.fyralabs.com/terra\$releasever" \
-  --setopt="terra.gpgkey=https://repos.fyralabs.com/terra\$releasever/key.asc" \
-  terra-release
+checkbox "Add Terra repository" bash -c '
+  if rpm -q terra-release > /dev/null 2>&1; then
+    echo "Terra repository already configured (terra-release installed)"
+    exit 0
+  fi
+  dnf install -y --nogpgcheck \
+    --repofrompath "terra,https://repos.fyralabs.com/terra\$releasever" \
+    --setopt="terra.gpgkey=https://repos.fyralabs.com/terra\$releasever/key.asc" \
+    terra-release
+'
