@@ -18,7 +18,7 @@ FILES=(
   "lib-checkbox.sh"
   "01-rooted-remove-software.sh"
   "02-rooted-update-fedora.sh"
-  "03-rooted-add-repos.sh"
+  "03-rooted-add-repo.sh"
   "04-rooted-add-software.sh"
   "05-non-rooted-add-software.sh"
 )
@@ -26,7 +26,7 @@ FILES=(
 STEPS=(
   "01-rooted-remove-software.sh|Removing default GNOME software|sudo"
   "02-rooted-update-fedora.sh|Updating Fedora|sudo"
-  "03-rooted-add-repos.sh|Adding repositories|sudo"
+  "03-rooted-add-repo.sh|Adding repositories|sudo"
   "04-rooted-add-software.sh|Installing system packages|sudo"
   "05-non-rooted-add-software.sh|Installing user apps and Flatpaks|user"
 )
