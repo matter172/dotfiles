@@ -7,7 +7,15 @@ source "${SCRIPT_DIR}/lib-checkbox.sh" || { echo "lib-checkbox.sh not found"; ex
 
 checkbox "Install gnome-extensions-cli" pipx install gnome-extensions-cli --system-site-packages
 
-checkbox "Install Tiling Shell extension" gext install tilingshell@ferrarodomenico.com
+EXTENSIONS=(
+  "tilingshell@ferrarodomenico.com|Tiling Shell"
+  "caffeine@patapon.info|Caffeine"
+)
+
+for entry in "${EXTENSIONS[@]}"; do
+  IFS='|' read -r ext_uuid label <<< "$entry"
+  checkbox "Install ${label} extension" gext install "$ext_uuid"
+done
 
 FLATPAKS=(
   "com.brave.Browser|Brave Browser"
