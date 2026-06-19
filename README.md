@@ -36,6 +36,7 @@ That's it. The master script downloads each step and runs them in order, showing
 [5/6] Installing user apps and Flatpaks
   [x] Install gnome-extensions-cli
   [x] Install Tiling Shell extension
+  [x] Install Caffeine extension
   [x] Install Brave Browser
   ...
 
@@ -75,12 +76,12 @@ Installs system packages from the repos added in the previous step:
 ### `05-non-rooted-add-software.sh`
 Installs user-space tools and Flatpaks, one item at a time:
 - `gnome-extensions-cli` via pipx
-- [Tiling Shell](https://github.com/domferr/tilingshell) — GNOME tiling extension
+- GNOME extensions, via `gext`: [Tiling Shell](https://github.com/domferr/tilingshell) (window tiling) and [Caffeine](https://extensions.gnome.org/extension/517/caffeine/) (disables screensaver/auto-suspend on demand)
 - Flatpaks (pinned to the `flathub` remote explicitly to avoid an interactive remote-choice prompt): Brave, Flatseal, Steam, ProtonPlus, Heroic Games Launcher, Decoder, Packet, Discord
 
 ### `06-non-rooted-update-dash.sh`
 Sets the GNOME Dash (Activities overview) favorites/pinned apps, in this order:
-Files, Brave, Discord, Steam, Heroic, Zed, Terminal.
+Files, Brave, Discord, Steam, Heroic, Zed, Terminal (Ptyxis).
 
 Rather than hardcoding exact `.desktop` filenames (which vary by packaging), it searches the standard application directories (`/usr/share/applications`, Flatpak export dirs, `~/.local/share/applications`) for each app, trying a few known candidate names per app and using the first match. Apps it can't find are skipped (not left as gaps), and a summary like `Set Dash favorites (6/7 found)` is shown. This step runs last, after the Flatpak installs, since it needs those apps' `.desktop` files to already exist.
 
@@ -95,3 +96,4 @@ Rather than hardcoding exact `.desktop` filenames (which vary by packaging), it 
 - `sudo -v` is called once up front to cache credentials, so you're only prompted for a password once even though several steps each use sudo.
 - Flatpak installs use `--noninteractive` and explicitly pin the `flathub` remote, since some app IDs (e.g. Flatseal) exist on multiple remotes and would otherwise prompt to choose one.
 - Zed is installed via Terra rather than the official curl installer, so it ships as a proper RPM and stays current through normal Fedora updates.
+- The Terra repo step checks `rpm -q terra-release` first and skips re-adding it if already present, since `dnf install --repofrompath` errors on a duplicate repo id rather than being a no-op.
