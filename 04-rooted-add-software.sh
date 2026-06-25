@@ -14,6 +14,8 @@ PACKAGES=(
   "akmod-nvidia"
   "xorg-x11-drv-nvidia-cuda"
   "gnome-tweaks"
+  "fuse"
+  "fuse-libs"
 )
 
 for pkg in "${PACKAGES[@]}"; do
