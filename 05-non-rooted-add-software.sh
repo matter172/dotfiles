@@ -28,6 +28,7 @@ FLATPAKS=(
   "com.discordapp.Discord|Discord"
   "net.nokyan.Resources|Resources"
   "org.gnome.Extensions|Extensions"
+  "it.mijorus.gearlever|Gear Lever"
 )
 
 for entry in "${FLATPAKS[@]}"; do
